@@ -76,6 +76,30 @@ dotnet run --configuration Release --project Examples/StereoKitTest/StereoKitTes
 # check /bin/distribute for final binary files
 ```
 
+## I want to modify code (visionOS / Apple Vision Pro)
+
+**Requisites:**
+- macOS with Xcode (visionOS SDK installed under Settings → Platforms)
+- [CMake](https://cmake.org) + Ninja (`brew install cmake ninja`)
+- Optional: [XcodeGen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`) for the ImmersiveSpace host project
+
+Existing StereoKit app code stays the same. Only the **build target / host shell** changes:
+
+```shell
+### From StereoKit's root directory ###
+
+# One-button: build libStereoKitC for visionOS + open the host app
+./tools/Build-VisionOS.sh
+
+# Or configure/build the native library only
+cmake --preset visionOS_Arm64_Debug
+cmake --build --preset visionOS_Arm64_Debug --target StereoKitC
+```
+
+Put (or keep) your StereoKit logic in [`Examples/StereoKitVisionOS/Shared`](Examples/StereoKitVisionOS/Shared). The Swift files under `Host/` are only the ImmersiveSpace wrapper — developers should not rewrite app features in Swift/RealityKit for the basic path.
+
+> Note: Vision Pro has no native OpenXR runtime. StereoKit maps XR through CompositorServices. Metal drawable submission is still landing on `feature/visionpro-openxr`; the retargeting build flow is ready now.
+
 ## I want to build the whole NuGet package
 
 The NuGet package build pipeline requires all the setup steps from above first! After that, you just need to run the [build powershell script](https://github.com/maluoi/StereoKit/blob/master/tools/Build-Nuget.ps1). This script will build all binary variants, run tests, and track some statistics.

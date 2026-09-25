@@ -1257,6 +1257,9 @@ namespace StereoKit
 		OpenXR,
 		/// <summary>StereoKit is running in a browser, and is using WebXR!</summary>
 		WebXR,
+		/// <summary>StereoKit is running on visionOS via Apple CompositorServices
+		/// (Vision Pro). This is not a native OpenXR runtime.</summary>
+		CompositorServices,
 	}
 
 	/// <summary>This describes the platform that StereoKit is running on.</summary>
@@ -1271,6 +1274,8 @@ namespace StereoKit
 		Android,
 		/// <summary>This is running in a browser.</summary>
 		Web,
+		/// <summary>This is running as a visionOS (Apple Vision Pro) app.</summary>
+		VisionOS,
 	}
 
 	/// <summary>This describes the graphics API that StereoKit is using for rendering.</summary>

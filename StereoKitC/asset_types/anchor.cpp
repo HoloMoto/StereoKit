@@ -244,11 +244,14 @@ button_state_ anchor_get_tracked(const anchor_t anchor) {
 ///////////////////////////////////////////
 
 bool32_t anchor_get_perception_anchor(const anchor_t anchor, void** perception_spatial_anchor) {
-#if !defined(SK_XR_OPENXR)
-	return false;
-#endif
+#if defined(SK_XR_OPENXR)
 	if (anch_sys != anchor_system_openxr_msft) return false;
 	return anchor_oxr_get_perception_anchor(anchor, perception_spatial_anchor);
+#else
+	(void)anchor;
+	(void)perception_spatial_anchor;
+	return false;
+#endif
 }
 
 ///////////////////////////////////////////

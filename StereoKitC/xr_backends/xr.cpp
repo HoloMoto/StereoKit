@@ -5,6 +5,7 @@
 
 #include "xr.h"
 #include "openxr.h"
+#include "compositor_services.h"
 
 namespace sk {
 
@@ -13,6 +14,8 @@ namespace sk {
 bool xr_init() {
 #if defined(SK_XR_OPENXR)
 	return openxr_init();
+#elif defined(SK_XR_COMPOSITOR)
+	return compositor_init();
 #else
 	return false;
 #endif
@@ -23,7 +26,8 @@ bool xr_init() {
 void xr_step_begin() {
 #if defined(SK_XR_OPENXR)
 	openxr_step_begin();
-#else
+#elif defined(SK_XR_COMPOSITOR)
+	compositor_step_begin();
 #endif
 }
 
@@ -32,7 +36,8 @@ void xr_step_begin() {
 void xr_step_end() {
 #if defined(SK_XR_OPENXR)
 	openxr_step_end();
-#else
+#elif defined(SK_XR_COMPOSITOR)
+	compositor_step_end();
 #endif
 }
 
@@ -41,7 +46,8 @@ void xr_step_end() {
 void xr_shutdown() {
 #if defined(SK_XR_OPENXR)
 	openxr_shutdown();
-#else
+#elif defined(SK_XR_COMPOSITOR)
+	compositor_shutdown();
 #endif
 }
 

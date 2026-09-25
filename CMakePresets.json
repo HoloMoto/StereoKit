@@ -438,6 +438,43 @@
         "CMAKE_TOOLCHAIN_FILE":          "$env{EMSDK}/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake",
         "CMAKE_CROSSCOMPILING_EMULATOR": "$env{EMSDK_NODE}"
       }
+    },
+    {
+      "name":        "visionOS",
+      "description": "Apple Vision Pro / visionOS (CompositorServices XR backend)",
+      "hidden":      true,
+      "generator":   "Ninja",
+      "cacheVariables": {
+        "CMAKE_SYSTEM_NAME":       "visionOS",
+        "CMAKE_OSX_ARCHITECTURES": "arm64",
+        "SK_BUILD_OPENXR_LOADER":  "OFF",
+        "SK_BUILD_TESTS":          "OFF"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs":  "${hostSystemName}",
+        "rhs":  "Darwin"
+      }
+    },
+    {
+      "name":        "visionOS_Arm64_Debug",
+      "description": "Debug build for visionOS arm64 (Vision Pro)",
+      "inherits":    "visionOS",
+      "hidden":      false,
+      "binaryDir":   "${sourceDir}/bin/intermediate/visionOS_Arm64_Debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name":        "visionOS_Arm64_Release",
+      "description": "Release build for visionOS arm64 (Vision Pro)",
+      "inherits":    "visionOS",
+      "hidden":      false,
+      "binaryDir":   "${sourceDir}/bin/intermediate/visionOS_Arm64_Release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
     }
   ],
   "buildPresets": [
@@ -477,6 +514,8 @@
       { "name":"Linux_Arm64_Debug_Fast",     "configuration":"Debug",   "configurePreset":"Linux_Arm64_Debug_Fast",     "jobs":24 },
       { "name":"Linux_Arm64_Release",        "configuration":"Release", "configurePreset":"Linux_Arm64_Release",        "jobs":24 },
       { "name":"Linux_Arm64_Release_Fast",   "configuration":"Release", "configurePreset":"Linux_Arm64_Release_Fast",   "jobs":24 },
-      { "name":"Web_Release",                "configuration":"Release", "configurePreset":"Web_Release",                "jobs":16 }
+      { "name":"Web_Release",                "configuration":"Release", "configurePreset":"Web_Release",                "jobs":16 },
+      { "name":"visionOS_Arm64_Debug",       "configuration":"Debug",   "configurePreset":"visionOS_Arm64_Debug",       "jobs":8 },
+      { "name":"visionOS_Arm64_Release",     "configuration":"Release", "configurePreset":"visionOS_Arm64_Release",     "jobs":8 }
   ]
 }

@@ -126,6 +126,11 @@ namespace StereoKit
 		/// and Maui apps will use the MainActivity.Handle for this.</summary>
 		public IntPtr androidActivity;
 
+		/// <summary>visionOS only: opaque pointer to a CompositorServices
+		/// LayerRenderer from the host ImmersiveSpace. Required for XR on
+		/// Apple Vision Pro.</summary>
+		public IntPtr visionosLayerRenderer;
+
 		/// <summary>Name of the application, this shows up an the top of the
 		/// Win32 window, and is submitted to OpenXR. OpenXR caps this at 128
 		/// characters.</summary>

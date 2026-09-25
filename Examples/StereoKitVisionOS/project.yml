@@ -1,0 +1,55 @@
+# XcodeGen project for the visionOS StereoKit host.
+# Generate with: xcodegen --spec project.yml
+# Or just run:   ../../tools/Build-VisionOS.sh
+
+name: StereoKitVisionOS
+options:
+  minimumXcodeGenVersion: 2.38.0
+  createIntermediateGroups: true
+  deploymentTarget:
+    visionOS: "2.0"
+settings:
+  base:
+    PRODUCT_BUNDLE_IDENTIFIER: net.stereokit.StereoKitVisionOS
+    SWIFT_VERSION: "5.0"
+    TARGETED_DEVICE_FAMILY: "7"
+    ENABLE_HARDENED_RUNTIME: YES
+    CODE_SIGN_STYLE: Automatic
+targets:
+  StereoKitVisionOS:
+    type: application
+    platform: visionOS
+    sources:
+      - path: Host
+        excludes:
+          - "*.md"
+      - path: Shared
+    settings:
+      base:
+        INFOPLIST_FILE: Host/Info.plist
+        CODE_SIGN_ENTITLEMENTS: Host/StereoKitVisionOS.entitlements
+        SWIFT_OBJC_BRIDGING_HEADER: Host/StereoKitVisionOS-Bridging-Header.h
+        HEADER_SEARCH_PATHS:
+          - $(SRCROOT)/../../StereoKitC
+          - $(SRCROOT)/../../bin/distribute/include
+          - $(SRCROOT)/Shared
+        LIBRARY_SEARCH_PATHS:
+          - $(SRCROOT)/../../bin/distribute/bin/visionOS/arm64/$(CONFIGURATION)
+          - $(SRCROOT)/../../bin/distribute/bin/visionOS/arm64/Debug
+          - $(SRCROOT)/../../bin/distribute/bin/visionOS/arm64/Release
+        OTHER_LDFLAGS:
+          - -lStereoKitC
+          - -lc++
+        CLANG_CXX_LANGUAGE_STANDARD: "c++17"
+        CLANG_ENABLE_MODULES: YES
+        LD_RUNPATH_SEARCH_PATHS:
+          - "$(inherited)"
+          - "@executable_path/Frameworks"
+    dependencies:
+      - sdk: CompositorServices.framework
+      - sdk: Metal.framework
+      - sdk: ARKit.framework
+      - sdk: SwiftUI.framework
+    scheme:
+      testTargets: []
+      gatherCoverageData: false

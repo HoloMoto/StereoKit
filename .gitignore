@@ -364,3 +364,7 @@ build_*/
 .deps_cache/
 
 **.DS_Store**
+
+# Generated visionOS host (via xcodegen / Build-VisionOS.sh)
+Examples/StereoKitVisionOS/StereoKitVisionOS.xcodeproj/
+Examples/StereoKitVisionOS/*.xcworkspace/

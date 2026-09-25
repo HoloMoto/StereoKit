@@ -16,6 +16,8 @@ backend_xr_type_ backend_xr_get_type() {
 		return backend_xr_type_openxr;
 #elif defined(SK_XR_WEBXR)
 		return backend_xr_type_webxr;
+#elif defined(SK_XR_COMPOSITOR)
+		return backend_xr_type_compositor_services;
 #else
 		log_err("Unimplemented XR backend code") // <-- Haha, see what I did there? No semicolon! :D
 #endif
@@ -145,6 +147,8 @@ backend_platform_ backend_platform_get() {
 	return backend_platform_win32;
 #elif defined(SK_OS_WEB)
 	return backend_platform_web;
+#elif defined(SK_OS_VISIONOS)
+	return backend_platform_visionos;
 #endif
 }
 

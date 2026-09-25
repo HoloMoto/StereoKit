@@ -16,6 +16,17 @@
 #elif defined(__ANDROID__)
 	#define SK_OS_ANDROID
 	#define SK_XR_OPENXR
+#elif defined(__APPLE__)
+	#include <TargetConditionals.h>
+	#if TARGET_OS_VISION
+		// visionOS has no native OpenXR runtime. StereoKit drives XR through
+		// Apple's CompositorServices + Metal + ARKit, while keeping the same
+		// high-level StereoKit XR app loop.
+		#define SK_OS_VISIONOS
+		#define SK_XR_COMPOSITOR
+	#else
+		#error "This StereoKit branch currently targets visionOS only among Apple platforms. Use feature/visionpro-openxr builds with the visionOS SDK."
+	#endif
 #elif defined(__linux__)
 	#define SK_OS_LINUX
 	#define SK_XR_OPENXR

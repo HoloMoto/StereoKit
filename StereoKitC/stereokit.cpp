@@ -25,6 +25,7 @@
 #include "asset_types/animation.h"
 #include "platforms/_platform.h"
 #include "platforms/web.h"
+#include "platforms/visionos.h"
 #include "tools/tools.h"
 
 #if defined(SK_OS_WEB)
@@ -492,6 +493,16 @@ void sk_set_window_xam(void* window) {
 
 ///////////////////////////////////////////
 
+void sk_visionos_set_layer_renderer(void *layer_renderer) {
+#if defined(SK_OS_VISIONOS)
+	visionos_set_layer_renderer(layer_renderer);
+#else
+	(void)layer_renderer;
+#endif
+}
+
+///////////////////////////////////////////
+
 const char *sk_version_name() {
 	return SK_VERSION " "
 #if defined(SK_OS_WEB)
@@ -500,6 +511,8 @@ const char *sk_version_name() {
 		"Android"
 #elif defined(SK_OS_LINUX)
 		"Linux"
+#elif defined(SK_OS_VISIONOS)
+		"visionOS"
 #elif defined(SK_OS_WINDOWS)
 		"Win32"
 #elif defined(SK_OS_WINDOWS_UWP)

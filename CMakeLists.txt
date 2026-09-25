@@ -26,6 +26,11 @@ endif()
 
 project(StereoKit VERSION "0.3.11" LANGUAGES CXX C)
 
+# visionOS / Apple audio (miniaudio) needs Objective-C++ when targeting Apple SDKs
+if (CMAKE_SYSTEM_NAME STREQUAL "visionOS" OR APPLE)
+  enable_language(OBJCXX)
+endif()
+
 # Add this repository's cmake modules to CMAKE_MODULE_PATH
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
@@ -121,6 +126,26 @@ elseif(EMSCRIPTEN)
     -sALLOW_MEMORY_GROWTH=1
     -g
     -gsource-map )
+elseif (CMAKE_SYSTEM_NAME STREQUAL "visionOS")
+  # Apple Vision Pro / visionOS
+  # Native OpenXR is not available; StereoKit uses CompositorServices.
+  set(SK_BUILD_OPENXR_LOADER OFF)
+  # sk_gpu has no Metal backend yet; SKG_FORCE_NULL keeps the build green while
+  # CompositorServices integration lands. Shader headers still need a target.
+  set(SK_SHADER_TARGETS "e")
+  add_definitions("-DSKG_FORCE_NULL")
+  set(VISIONOS_LIBS
+    "-framework Foundation"
+    "-framework Metal"
+    "-framework CompositorServices"
+    "-framework ARKit"
+    "-framework AVFoundation"
+    "-framework AudioToolbox"
+    "-framework CoreFoundation"
+  )
+  set(THREADS_PREFER_PTHREAD_FLAG ON)
+  find_package(Threads REQUIRED)
+  list(APPEND VISIONOS_LIBS Threads::Threads)
 elseif (UNIX)
   set(SK_SHADER_TARGETS "e")
   set(LINUX_LIBS
@@ -331,6 +356,7 @@ set(SK_SRC_LIBRARIES
   StereoKitC/libraries/qoi.h
   StereoKitC/libraries/qoi.cpp
   StereoKitC/libraries/sk_gpu.cpp
+  StereoKitC/libraries/sk_gpu_null_visionos.cpp
   StereoKitC/libraries/sokol_time.h
   StereoKitC/libraries/sokol_time.cpp
   StereoKitC/libraries/stb_image.h
@@ -399,6 +425,8 @@ set(SK_SRC_PLATFORMS
   StereoKitC/platforms/android.h
   StereoKitC/platforms/linux.h
   StereoKitC/platforms/linux.cpp
+  StereoKitC/platforms/visionos.h
+  StereoKitC/platforms/visionos.cpp
   StereoKitC/platforms/platform.h
   StereoKitC/platforms/_platform.h
   StereoKitC/platforms/platform.cpp
@@ -421,6 +449,8 @@ set(SK_SRC_XR_BACKENDS
   StereoKitC/xr_backends/openxr_scene_understanding.cpp
   StereoKitC/xr_backends/openxr_view.h
   StereoKitC/xr_backends/openxr_view.cpp
+  StereoKitC/xr_backends/compositor_services.h
+  StereoKitC/xr_backends/compositor_services.cpp
   StereoKitC/xr_backends/xr.h
   StereoKitC/xr_backends/xr.cpp
   StereoKitC/xr_backends/simulator.h
@@ -484,6 +514,14 @@ add_library(StereoKitC ${LIBRARY_TYPE}
   ${SK_SRC_BASISU}
   ${SK_SRC_SHADERS_H} )
 
+if (CMAKE_SYSTEM_NAME STREQUAL "visionOS")
+  # miniaudio pulls AVFoundation / Foundation ObjC headers on Apple platforms
+  set_source_files_properties(
+    StereoKitC/libraries/miniaudio.cpp
+    PROPERTIES LANGUAGE OBJCXX COMPILE_FLAGS "-fobjc-arc"
+  )
+endif()
+
 if (ANDROID)
   set_property(TARGET StereoKitC PROPERTY CXX_STANDARD 11)
   set_property(TARGET StereoKitC PROPERTY CXX_STANDARD_REQUIRED ON)
@@ -532,7 +570,7 @@ if (NOT MSVC)
     StereoKitC/lib/include_no_win/)
   set(SK_BIN_DEBUG_EXT ".so.dbg")
 
-  if (NOT EMSCRIPTEN AND SK_BUILD_SHARED_LIBS)
+  if (NOT EMSCRIPTEN AND NOT APPLE AND SK_BUILD_SHARED_LIBS)
     set(SK_SEPARATE_DBG ON)
     add_custom_command(TARGET StereoKitC POST_BUILD
       COMMAND ${CMAKE_OBJCOPY} --only-keep-debug $<TARGET_FILE:StereoKitC> $<TARGET_FILE_DIR:StereoKitC>/$<TARGET_FILE_BASE_NAME:StereoKitC>${SK_BIN_DEBUG_EXT}
@@ -570,6 +608,7 @@ target_link_libraries( StereoKitC
     ${PHYSICS_LIB}
     ${LINUX_LIBS}
     ${WINDOWS_LIBS}
+    ${VISIONOS_LIBS}
     ${CMAKE_DL_LIBS}
     meshoptimizer
   PUBLIC
@@ -614,6 +653,8 @@ elseif (WIN32)
   set(SK_BIN_OS "Win32")
 elseif(ANDROID)
   set(SK_BIN_OS "Android")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "visionOS")
+  set(SK_BIN_OS "visionOS")
 elseif(UNIX)
   set(SK_BIN_OS "Linux")
 elseif(EMSCRIPTEN)
@@ -633,6 +674,9 @@ elseif(WIN32)
   else()
     set(SK_ARCH "x86")
   endif()
+elseif(CMAKE_SYSTEM_NAME STREQUAL "visionOS")
+  set(SK_ARCH "arm64")
+  set(SK_LIB_PREFIX "lib")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
   if(CMAKE_SYSTEM_PROCESSOR)
     set(SK_ARCH ${CMAKE_SYSTEM_PROCESSOR})

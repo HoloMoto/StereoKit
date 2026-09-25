@@ -5,7 +5,7 @@
  */
 
 #include "platform.h"
-#if defined (SK_OS_ANDROID) || defined(SK_OS_LINUX)
+#if defined (SK_OS_ANDROID) || defined(SK_OS_LINUX) || defined(SK_OS_VISIONOS)
 
 #include "../sk_memory.h"
 #include <unistd.h>
@@ -28,4 +28,4 @@ char *platform_working_dir() {
 }
 
 } // namespace sk
-#endif // defined (SK_OS_ANDROID) || defined(SK_OS_LINUX)
+#endif // defined (SK_OS_ANDROID) || defined(SK_OS_LINUX) || defined(SK_OS_VISIONOS)

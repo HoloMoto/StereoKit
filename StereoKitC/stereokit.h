@@ -452,6 +452,10 @@ typedef struct sk_settings_t {
 
 	void          *android_java_vm;  // JavaVM*
 	void          *android_activity; // jobject
+
+	/*visionOS only: opaque pointer to a CompositorServices LayerRenderer
+	  created by the host ImmersiveSpace. Required for XR mode on Vision Pro.*/
+	void          *visionos_layer_renderer;
 } sk_settings_t;
 
 typedef struct system_info_t {
@@ -485,6 +489,8 @@ typedef enum quit_reason_ {
 SK_API bool32_t      sk_init               (sk_settings_t settings);
 SK_API void          sk_set_window         (void *window);
 SK_API void          sk_set_window_xam     (void *window);
+/*visionOS only: pass a CompositorServices LayerRenderer from ImmersiveSpace.*/
+SK_API void          sk_visionos_set_layer_renderer(void *layer_renderer);
 SK_API void          sk_shutdown           (void);
 SK_API void          sk_shutdown_unsafe    (void);
 SK_API void          sk_quit               (quit_reason_ quitReason = quit_reason_user);
@@ -2394,6 +2400,11 @@ typedef enum backend_xr_type_ {
 	backend_xr_type_openxr,
 	/*StereoKit is running in a browser, and is using WebXR!*/
 	backend_xr_type_webxr,
+	/*StereoKit is running on visionOS using Apple CompositorServices
+	  (Vision Pro). This is not an OpenXR runtime; Apple does not provide
+	  one on-device. For OpenXR content on Vision Pro, use CloudXR /
+	  Foveated Streaming from a desktop OpenXR app.*/
+	backend_xr_type_compositor_services,
 } backend_xr_type_;
 
 /*This describes the platform that StereoKit is running on.*/
@@ -2408,6 +2419,8 @@ typedef enum backend_platform_ {
 	backend_platform_android,
 	/*This is running in a browser.*/
 	backend_platform_web,
+	/*This is running as a visionOS (Apple Vision Pro) app.*/
+	backend_platform_visionos,
 } backend_platform_;
 
 /*This describes the graphics API that StereoKit is using for rendering.*/

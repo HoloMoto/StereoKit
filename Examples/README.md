@@ -6,6 +6,8 @@ Developers adding features to StereoKit, or working directly with StereoKit's C 
 
 Also included are some _very_ simple examples of using StereoKit from other languages, like [Zig](StereoKitZig/) and [V](StereoKitV/). These are more proof of concept, rather than robust samples, but may get the adventurous developer off the ground.
 
+For Apple Vision Pro, see [StereoKitVisionOS](StereoKitVisionOS/) — same StereoKit app code, visionOS ImmersiveSpace host, rebuilt with `./tools/Build-VisionOS.sh`.
+
 ---
 
 Note that most (not Zig/V) of these samples are meant to be deployed as a subset of the Visual Studio .sln in the root directory. For information about building these, see the [building guide](/BUILDING.md)
